@@ -1,0 +1,44 @@
+[project]
+name = "the-tower-analyzer"
+version = "0.1.0"
+description = "Read-only analyzer for The Tower Android save files"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "pydantic>=2.8,<3",
+  "rich>=13.7,<15",
+  "typer>=0.12,<1",
+]
+
+[project.scripts]
+tower-analyzer = "tower_analyzer.cli:app"
+
+[dependency-groups]
+dev = [
+  "mypy>=1.10,<2",
+  "pytest>=8.2,<9",
+  "ruff>=0.5,<1",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/tower_analyzer"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+mypy_path = "src"
