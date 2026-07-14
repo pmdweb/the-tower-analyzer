@@ -78,15 +78,11 @@ class ObjectGraph:
         if root_id not in registry:
             if not raw_objects:
                 raise ObjectGraphError("No raw objects provided to resolve")
-            # Fallback: use the first object
-            root_raw = raw_objects[0]
-            logger.warning(
-                "Root object id=%d not found; falling back to first object id=%d",
-                root_id,
-                root_raw.object_id,
+            raise ObjectGraphError(
+                f"Root object id={root_id} not found in raw objects (available ids: {sorted(registry)})"
             )
-        else:
-            root_raw = registry[root_id]
+
+        root_raw = registry[root_id]
 
         logger.warning(
             "ObjectGraph resolution is incomplete. "
