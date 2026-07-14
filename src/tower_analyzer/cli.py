@@ -239,6 +239,7 @@ def compare(
     for note in diff.notes:
         diff_md.append(f"- {note}")
 
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text("\n".join(diff_md), encoding="utf-8")
     console.print(f"[green]✓[/green] Diff written to [bold]{output_path}[/bold]")
 
