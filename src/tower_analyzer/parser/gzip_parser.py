@@ -90,7 +90,23 @@ class GzipParser:
         GzipParseError
             If the input is not valid GZip data.
         """
+        max_decompressed_bytes = 50 * 1024 * 1024  # 50 MiB safety limit
         try:
-            return gzip.decompress(data)
+            import io as _io
+
+            with gzip.GzipFile(fileobj=_io.BytesIO(data), mode="rb") as fh:
+                chunks: list[bytes] = []
+                total = 0
+                while True:
+                    chunk = fh.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    total += len(chunk)
+                    if total > max_decompressed_bytes:
+                        raise GzipParseError(
+                            f"Decompressed data exceeds {max_decompressed_bytes} bytes; aborting"
+                        )
+                    chunks.append(chunk)
+                return b"".join(chunks)
         except (OSError, gzip.BadGzipFile) as exc:
             raise GzipParseError(f"Failed to decompress bytes: {exc}") from exc
