@@ -50,9 +50,22 @@ class GzipParser:
 
         logger.debug("Decompressing %s (%d bytes)", path, path.stat().st_size)
 
+        max_decompressed_bytes = 50 * 1024 * 1024  # 50 MiB safety limit
         try:
             with gzip.open(path, "rb") as fh:
-                data = fh.read()
+                chunks: list[bytes] = []
+                total = 0
+                while True:
+                    chunk = fh.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    total += len(chunk)
+                    if total > max_decompressed_bytes:
+                        raise GzipParseError(
+                            f"Decompressed data exceeds {max_decompressed_bytes} bytes; aborting"
+                        )
+                    chunks.append(chunk)
+                data = b"".join(chunks)
         except (OSError, gzip.BadGzipFile) as exc:
             raise GzipParseError(f"Failed to decompress {path}: {exc}") from exc
 
