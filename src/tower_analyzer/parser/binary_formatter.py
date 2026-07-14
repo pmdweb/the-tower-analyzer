@@ -174,6 +174,7 @@ class BinaryFormatterParser:
     @staticmethod
     def _read_string(reader: io.BytesIO) -> str:
         """Read a length-prefixed UTF-8 string (7-bit encoded length)."""
+        max_length = 10 * 1024 * 1024  # 10 MiB safety limit
         length = 0
         shift = 0
         while True:
@@ -185,4 +186,13 @@ class BinaryFormatterParser:
             if not (byte_val & 0x80):
                 break
             shift += 7
-        return reader.read(length).decode("utf-8", errors="replace")
+            if shift > 28:
+                raise BinaryFormatterError("String length prefix is too long")
+
+        if length > max_length:
+            raise BinaryFormatterError(f"String length {length} exceeds safety limit {max_length}")
+
+        raw = reader.read(length)
+        if len(raw) != length:
+            raise BinaryFormatterError("Unexpected end of stream reading string payload")
+        return raw.decode("utf-8", errors="replace")
