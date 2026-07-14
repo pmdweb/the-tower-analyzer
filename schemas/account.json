@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/pmdweb/the-tower-analyzer/schemas/account.json",
+  "title": "account.json",
+  "description": "Schema for the JSON exported by `tower-analyzer export-json`.",
+  "type": "object",
+  "properties": {
+    "source_file": {
+      "type": "string",
+      "description": "Path to the original playerInfo.dat"
+    },
+    "parsed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC timestamp when the file was parsed"
+    },
+    "parse_warnings": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Non-fatal warnings from the parser"
+    },
+    "raw_bytes_size": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Size of the compressed .dat file in bytes"
+    },
+    "account": {
+      "type": "object",
+      "description": "Player account information",
+      "properties": {
+        "player_name": { "type": "string" },
+        "player_id": { "type": "string" },
+        "level": { "type": "integer", "minimum": 0 },
+        "prestige": { "type": "integer", "minimum": 0 },
+        "coins": { "type": "number", "minimum": 0 },
+        "gems": { "type": "integer", "minimum": 0 },
+        "kills": { "type": "integer", "minimum": 0 },
+        "highest_wave": { "type": "integer", "minimum": 0 },
+        "game_version": { "type": "string" }
+      }
+    },
+    "workshop": {
+      "type": "object",
+      "properties": {
+        "upgrades": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "level": { "type": "integer", "minimum": 0 },
+              "max_level": { "type": "integer", "minimum": 0 },
+              "raw_value": { "type": "number" }
+            }
+          }
+        }
+      }
+    },
+    "economy": {
+      "type": "object",
+      "properties": {
+        "coins": { "type": "number", "minimum": 0 },
+        "gems": { "type": "integer", "minimum": 0 },
+        "keys": { "type": "integer", "minimum": 0 },
+        "dust": { "type": "integer", "minimum": 0 },
+        "orbs": { "type": "integer", "minimum": 0 }
+      }
+    }
+  },
+  "required": ["source_file", "parsed_at", "parse_warnings", "account"]
+}
